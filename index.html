@@ -114,11 +114,14 @@
         #calculator-previous-operand {
             font-size: 1.2rem;
             color: #666;
+            height: 1.5rem; /* Ajout pour la stabilité de la mise en page */
         }
         #calculator.dark #calculator-previous-operand { color: #888; }
         #calculator-current-operand {
             font-size: 2.5rem;
             font-weight: 600;
+            word-wrap: break-word; /* Pour éviter le débordement */
+            min-height: 3rem; /* Ajout pour la stabilité de la mise en page */
         }
         #calculator-keys {
             display: grid;
@@ -711,7 +714,7 @@
         });
         updateConverterUI();
 
-        // --- LOGIQUE DE LA CALCULATRICE ---
+        // --- LOGIQUE DE LA CALCULATRICE (CORRIGÉE) ---
         const calculator = document.getElementById('calculator');
         const openCalculatorBtn = document.getElementById('openCalculatorBtn');
         const closeCalculatorBtn = document.getElementById('closeCalculatorBtn');
@@ -723,10 +726,17 @@
         let previousOperand = '';
         let operation = undefined;
 
+        function getDisplayOperator(op) {
+            if (op === '/') return '÷';
+            if (op === '*') return '×';
+            if (op === '-') return '−';
+            return op; // Pour '+' et '%'
+        }
+
         function updateDisplay() {
-            displayCurrent.innerText = currentOperand;
+            displayCurrent.innerText = currentOperand.toLocaleString('en-US'); // Utilise toLocaleString pour formater
             if (operation != null) {
-                displayPrevious.innerText = `${previousOperand} ${operation}`;
+                displayPrevious.innerText = `${previousOperand.toLocaleString('en-US')} ${getDisplayOperator(operation)}`;
             } else {
                 displayPrevious.innerText = '';
             }
@@ -742,7 +752,11 @@
         }
 
         function chooseOperation(op) {
-            if (currentOperand === '') return;
+            if (currentOperand === '' && previousOperand === '') return;
+             if (currentOperand === '' && previousOperand !== '') {
+                operation = op;
+                return;
+            }
             if (previousOperand !== '') {
                 compute();
             }
@@ -758,9 +772,9 @@
             if (isNaN(prev) || isNaN(current)) return;
             switch (operation) {
                 case '+': computation = prev + current; break;
-                case '−': computation = prev - current; break;
-                case '×': computation = prev * current; break;
-                case '÷': computation = prev / current; break;
+                case '-': computation = prev - current; break;
+                case '*': computation = prev * current; break;
+                case '/': computation = prev / current; break;
                 case '%': computation = prev % current; break;
                 default: return;
             }
@@ -781,13 +795,17 @@
         }
 
         keys.addEventListener('click', e => {
-            const { action, number, operator } = e.target.dataset;
+            const button = e.target.closest('button');
+            if (!button) return;
+
+            const { action, number, operator } = button.dataset;
+
             if (number !== undefined) {
-                appendNumber(e.target.innerText);
+                appendNumber(button.innerText);
                 updateDisplay();
             }
             if (operator !== undefined) {
-                chooseOperation(e.target.innerText);
+                chooseOperation(operator);
                 updateDisplay();
             }
             if (action === 'equals') {
@@ -839,3 +857,4 @@
     </script>
 </body>
 </html>
+
