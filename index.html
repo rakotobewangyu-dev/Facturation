@@ -175,53 +175,7 @@
             <div class="lg:col-span-1">
                 <div id="right-panels-container" class="lg:sticky top-8 space-y-8">
                     
-                    <div class="form-section sortable-panel">
-                        <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
-                            <h2 class="text-lg font-semibold text-gray-800">Action</h2>
-                            <div class="panel-controls flex items-center">
-                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors">
-                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                                </button>
-                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors">
-                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="text-center">
-                            <span class="text-3xl font-bold text-gray-800" id="totalDisplay">0.00 Ar</span>
-                            <p class="text-gray-500">Total</p>
-                        </div>
-                        <button id="generateImageBtn" class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-lg mt-4">
-                            Télécharger l'Aperçu (Image)
-                        </button>
-                    </div>
-
-                    <div class="form-section sortable-panel">
-                        <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
-                            <h2 class="text-lg font-semibold text-gray-800">Convertisseur</h2>
-                            <div class="panel-controls flex items-center">
-                                <button id="swapConverterBtn" title="Inverser la conversion" class="p-1 rounded transition-colors mr-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                                </button>
-                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors">
-                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                                </button>
-                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors">
-                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div>
-                            <label id="converterInputLabel" for="converterInput" class="block text-sm font-medium text-gray-700 mb-1"></label>
-                            <input type="number" id="converterInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
-                        </div>
-                        <div class="mt-4 text-center">
-                            <p id="converterOutputLabel" class="text-sm text-gray-500"></p>
-                            <p id="converterOutputResult" class="text-2xl font-bold text-green-600"></p>
-                        </div>
-                    </div>
-
-                    <div class="form-section sortable-panel">
+                     <div class="form-section sortable-panel">
                         <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
                              <h2 class="text-lg font-semibold text-gray-800">Calculateur de Bénéfice</h2>
                             <div class="panel-controls flex items-center">
@@ -254,6 +208,53 @@
                              <p id="profit-rmb" class="text-xl font-bold text-blue-600">0.00 RMB</p>
                          </div>
                     </div>
+
+                    <div class="form-section sortable-panel">
+                        <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">Convertisseur</h2>
+                            <div class="panel-controls flex items-center">
+                                <button id="swapConverterBtn" title="Inverser la conversion" class="p-1 rounded transition-colors mr-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                </button>
+                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                </button>
+                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div>
+                            <label id="converterInputLabel" for="converterInput" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                            <input type="number" id="converterInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
+                        </div>
+                        <div class="mt-4 text-center">
+                            <p id="converterOutputLabel" class="text-sm text-gray-500"></p>
+                            <p id="converterOutputResult" class="text-2xl font-bold text-green-600"></p>
+                        </div>
+                    </div>
+
+                    <div class="form-section sortable-panel">
+                        <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">Action</h2>
+                            <div class="panel-controls flex items-center">
+                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                </button>
+                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <span class="text-3xl font-bold text-gray-800" id="totalDisplay">0.00 Ar</span>
+                            <p class="text-gray-500">Total</p>
+                        </div>
+                        <button id="generateImageBtn" class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-lg mt-4">
+                            Télécharger l'Aperçu (Image)
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </div>
