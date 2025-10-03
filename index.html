@@ -14,7 +14,6 @@
             padding: 1.5rem;
             border-radius: 0.75rem;
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-            margin-bottom: 2rem;
         }
         .form-section h2 {
             border-bottom: 2px solid #ef4444;
@@ -53,103 +52,6 @@
         #quotation-preview .text-right { text-align: right; }
         #quotation-preview .text-center { text-align: center; }
         #quotation-preview .font-bold { font-weight: bold; }
-
-        /* Styles pour la calculatrice */
-        #calculator {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 320px;
-            background-color: #f3f3f3;
-            border-radius: 10px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-            z-index: 1000;
-            font-family: 'Segoe UI', sans-serif;
-        }
-        #calculator.dark {
-             background-color: #1f1f1f;
-             color: white;
-        }
-        #calculator-header {
-            padding: 10px;
-            cursor: move;
-            background-color: #e6e6e6;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        #calculator.dark #calculator-header {
-            background-color: #323232;
-        }
-        #calculator-header span {
-            font-weight: 600;
-        }
-        #closeCalculatorBtn {
-            cursor: pointer;
-            border: none;
-            background: none;
-            font-size: 20px;
-            font-weight: bold;
-            color: #555;
-        }
-         #calculator.dark #closeCalculatorBtn {
-            color: #ccc;
-         }
-        #calculator-display {
-            background-color: #f3f3f3;
-            color: #111;
-            text-align: right;
-            padding: 20px;
-            border-bottom: 1px solid #ccc;
-        }
-         #calculator.dark #calculator-display {
-            background-color: #1f1f1f;
-            color: white;
-            border-bottom: 1px solid #444;
-         }
-        #calculator-previous-operand {
-            font-size: 1.2rem;
-            color: #666;
-            height: 1.5rem; /* Ajout pour la stabilité de la mise en page */
-        }
-        #calculator.dark #calculator-previous-operand { color: #888; }
-        #calculator-current-operand {
-            font-size: 2.5rem;
-            font-weight: 600;
-            word-wrap: break-word; /* Pour éviter le débordement */
-            min-height: 3rem; /* Ajout pour la stabilité de la mise en page */
-        }
-        #calculator-keys {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2px;
-            padding: 10px;
-        }
-        .calc-btn {
-            border: none;
-            background-color: #e9e9e9;
-            padding: 20px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.2s;
-        }
-        #calculator.dark .calc-btn {
-            background-color: #2c2c2c;
-            color: white;
-        }
-        .calc-btn:hover { background-color: #dcdcdc; }
-        #calculator.dark .calc-btn:hover { background-color: #444; }
-        .calc-btn.operator { background-color: #d9d9d9; }
-        #calculator.dark .calc-btn.operator { background-color: #3b3b3b; }
-        .calc-btn.equals { background-color: #0078d4; color: white; }
-        #calculator.dark .calc-btn.equals { background-color: #106ebe; }
-        .calc-btn.span-two { grid-column: span 2; }
-
 
         @media (max-width: 640px) {
             #quotation-preview .header-flex {
@@ -263,33 +165,55 @@
             </div>
 
             <div class="lg:col-span-1">
-                <div class="form-section lg:sticky top-8">
-                    <h2 class="text-center">Action</h2>
-                    <div class="text-center my-6">
-                        <span class="text-3xl font-bold text-gray-800" id="totalDisplay">0.00 Ar</span>
-                        <p class="text-gray-500">Total</p>
-                    </div>
-                    <button id="generateImageBtn" class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-lg mb-4">
-                        Télécharger l'Aperçu (Image)
-                    </button>
-                     <button id="openCalculatorBtn" class="w-full bg-gray-700 text-white font-bold py-3 px-4 rounded-lg hover:bg-gray-800 transition-colors text-lg">
-                        Ouvrir la Calculatrice
-                    </button>
-                </div>
-                <div class="form-section lg:sticky top-48">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-center mb-0 border-b-0 pb-0">Convertisseur</h2>
-                        <button id="swapConverterBtn" title="Inverser la conversion" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
-                            <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                <div class="lg:sticky top-8 space-y-8">
+                    <div class="form-section">
+                        <h2 class="text-center">Action</h2>
+                        <div class="text-center my-6">
+                            <span class="text-3xl font-bold text-gray-800" id="totalDisplay">0.00 Ar</span>
+                            <p class="text-gray-500">Total</p>
+                        </div>
+                        <button id="generateImageBtn" class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-lg mb-4">
+                            Télécharger l'Aperçu (Image)
                         </button>
                     </div>
-                    <div class="mt-4">
-                        <label id="converterInputLabel" for="converterInput" class="block text-sm font-medium text-gray-700 mb-1"></label>
-                        <input type="number" id="converterInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
+                    <div class="form-section">
+                        <div class="flex justify-between items-center">
+                            <h2 class="text-center mb-0 border-b-0 pb-0">Convertisseur</h2>
+                            <button id="swapConverterBtn" title="Inverser la conversion" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
+                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                            </button>
+                        </div>
+                        <div class="mt-4">
+                            <label id="converterInputLabel" for="converterInput" class="block text-sm font-medium text-gray-700 mb-1"></label>
+                            <input type="number" id="converterInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
+                        </div>
+                        <div class="mt-4 text-center">
+                            <p id="converterOutputLabel" class="text-sm text-gray-500"></p>
+                            <p id="converterOutputResult" class="text-2xl font-bold text-green-600"></p>
+                        </div>
                     </div>
-                    <div class="mt-4 text-center">
-                        <p id="converterOutputLabel" class="text-sm text-gray-500"></p>
-                        <p id="converterOutputResult" class="text-2xl font-bold text-green-600"></p>
+                     <div class="form-section">
+                         <h2 class="text-center">Calculateur de Bénéfice</h2>
+                         <div class="mt-4">
+                            <label for="profit-base-amount" class="block text-sm font-medium text-gray-700 mb-1">Montant de base (Optionnel)</label>
+                            <div class="flex space-x-2">
+                                <input type="number" id="profit-base-amount" placeholder="Total par défaut" class="w-2/3 p-2 border border-gray-300 rounded-md">
+                                <select id="profit-base-currency" class="w-1/3 p-2 border border-gray-300 rounded-md">
+                                    <option value="MGA">Ariary</option>
+                                    <option value="RMB">RMB</option>
+                                </select>
+                            </div>
+                        </div>
+                         <div class="mt-4">
+                             <label for="profit-percentage" class="block text-sm font-medium text-gray-700 mb-1">Pourcentage de bénéfice (%)</label>
+                             <input type="number" id="profit-percentage" class="w-full p-2 border border-gray-300 rounded-md" value="10">
+                         </div>
+                         <div id="profit-results" class="mt-4 text-center">
+                             <p class="text-sm text-gray-500">Bénéfice à ajouter (Ariary)</p>
+                             <p id="profit-ariary" class="text-xl font-bold text-blue-600">0 Ar</p>
+                             <p class="text-sm text-gray-500 mt-2">Bénéfice à ajouter (RMB)</p>
+                             <p id="profit-rmb" class="text-xl font-bold text-blue-600">0.00 RMB</p>
+                         </div>
                     </div>
                 </div>
             </div>
@@ -304,43 +228,9 @@
         </div>
     </div>
 
-    <!-- Structure de la calculatrice -->
-    <div id="calculator">
-        <div id="calculator-header">
-            <span>Calculatrice</span>
-            <button id="closeCalculatorBtn">&times;</button>
-        </div>
-        <div id="calculator-display">
-            <div id="calculator-previous-operand"></div>
-            <div id="calculator-current-operand">0</div>
-        </div>
-        <div id="calculator-keys">
-            <button class="calc-btn operator" data-action="clear">C</button>
-            <button class="calc-btn operator" data-action="delete">⌫</button>
-            <button class="calc-btn operator" data-operator="%">%</button>
-            <button class="calc-btn operator" data-operator="/">÷</button>
-            <button class="calc-btn" data-number>7</button>
-            <button class="calc-btn" data-number>8</button>
-            <button class="calc-btn" data-number>9</button>
-            <button class="calc-btn operator" data-operator="*">×</button>
-            <button class="calc-btn" data-number>4</button>
-            <button class="calc-btn" data-number>5</button>
-            <button class="calc-btn" data-number>6</button>
-            <button class="calc-btn operator" data-operator="-">−</button>
-            <button class="calc-btn" data-number>1</button>
-            <button class="calc-btn" data-number>2</button>
-            <button class="calc-btn" data-number>3</button>
-            <button class="calc-btn operator" data-operator="+">+</button>
-            <button class="calc-btn" data-number>0</button>
-            <button class="calc-btn" data-action="decimal">.</button>
-            <button class="calc-btn equals span-two" data-action="equals">=</button>
-        </div>
-    </div>
-
-
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // --- LOGIQUE DU GÉNÉRATEUR DE DEVIS ---
+        // --- LOGIC FOR THE QUOTATION GENERATOR ---
         const logoTopLeftUrl = "https://i.ibb.co/HDBqLXCT/Aridago-Logo-removebg-preview.png";
         const logoBottomRightUrl = "https://i.ibb.co/mFyw1zmW/Sary-sonia.png";
 
@@ -582,6 +472,7 @@
                 <span class="text-xl font-semibold text-gray-500">(${totalRmb.toFixed(2)} RMB)</span>`;
                 
             renderQuotationPreview();
+            updateProfitCalculator();
         }
 
         function syncStateWithForm() {
@@ -632,7 +523,37 @@
             }
         }
 
-        // Initialisation du générateur de devis
+        function updateProfitCalculator() {
+            const customBaseAmountInput = parseFloat(document.getElementById('profit-base-amount').value) || 0;
+            const currency = document.getElementById('profit-base-currency').value; // 'MGA' or 'RMB'
+            const percentage = parseFloat(document.getElementById('profit-percentage').value) || 0;
+            
+            let baseAmountInAriary = 0;
+
+            if (customBaseAmountInput > 0) {
+                 if (currency === 'RMB') {
+                    baseAmountInAriary = customBaseAmountInput * state.exchangeRate;
+                } else { // 'MGA'
+                    baseAmountInAriary = customBaseAmountInput;
+                }
+            } else {
+                baseAmountInAriary = state.items.reduce((acc, item) => {
+                    if (item.isText) {
+                        return acc + (item.directPrice || 0);
+                    } else {
+                        return acc + (item.quantity * item.price);
+                    }
+                }, 0);
+            }
+
+            const profitAriary = (baseAmountInAriary * percentage) / 100;
+            const profitRmb = state.exchangeRate > 0 ? profitAriary / state.exchangeRate : 0;
+
+            document.getElementById('profit-ariary').textContent = `${profitAriary.toLocaleString('fr-FR')} Ar`;
+            document.getElementById('profit-rmb').textContent = `${profitRmb.toFixed(2)} RMB`;
+        }
+
+        // Initialization of the quote generator
         document.getElementById('quotationDate').value = state.quotationDate;
         syncStateWithForm();
         renderItemsForm();
@@ -712,147 +633,10 @@
             syncStateWithForm();
             updateConverter();
         });
+        document.getElementById('profit-percentage').addEventListener('input', updateProfitCalculator);
+        document.getElementById('profit-base-amount').addEventListener('input', updateProfitCalculator);
+        document.getElementById('profit-base-currency').addEventListener('change', updateProfitCalculator);
         updateConverterUI();
-
-        // --- LOGIQUE DE LA CALCULATRICE (CORRIGÉE) ---
-        const calculator = document.getElementById('calculator');
-        const openCalculatorBtn = document.getElementById('openCalculatorBtn');
-        const closeCalculatorBtn = document.getElementById('closeCalculatorBtn');
-        const displayCurrent = document.getElementById('calculator-current-operand');
-        const displayPrevious = document.getElementById('calculator-previous-operand');
-        const keys = document.getElementById('calculator-keys');
-
-        let currentOperand = '0';
-        let previousOperand = '';
-        let operation = undefined;
-
-        function getDisplayOperator(op) {
-            if (op === '/') return '÷';
-            if (op === '*') return '×';
-            if (op === '-') return '−';
-            return op; // Pour '+' et '%'
-        }
-
-        function updateDisplay() {
-            displayCurrent.innerText = currentOperand.toLocaleString('en-US'); // Utilise toLocaleString pour formater
-            if (operation != null) {
-                displayPrevious.innerText = `${previousOperand.toLocaleString('en-US')} ${getDisplayOperator(operation)}`;
-            } else {
-                displayPrevious.innerText = '';
-            }
-        }
-
-        function appendNumber(number) {
-            if (number === '.' && currentOperand.includes('.')) return;
-            if (currentOperand === '0' && number !== '.') {
-                currentOperand = number;
-            } else {
-                currentOperand += number;
-            }
-        }
-
-        function chooseOperation(op) {
-            if (currentOperand === '' && previousOperand === '') return;
-             if (currentOperand === '' && previousOperand !== '') {
-                operation = op;
-                return;
-            }
-            if (previousOperand !== '') {
-                compute();
-            }
-            operation = op;
-            previousOperand = currentOperand;
-            currentOperand = '';
-        }
-
-        function compute() {
-            let computation;
-            const prev = parseFloat(previousOperand);
-            const current = parseFloat(currentOperand);
-            if (isNaN(prev) || isNaN(current)) return;
-            switch (operation) {
-                case '+': computation = prev + current; break;
-                case '-': computation = prev - current; break;
-                case '*': computation = prev * current; break;
-                case '/': computation = prev / current; break;
-                case '%': computation = prev % current; break;
-                default: return;
-            }
-            currentOperand = computation.toString();
-            operation = undefined;
-            previousOperand = '';
-        }
-
-        function clear() {
-            currentOperand = '0';
-            previousOperand = '';
-            operation = undefined;
-        }
-
-        function deleteLast() {
-            currentOperand = currentOperand.toString().slice(0, -1);
-            if(currentOperand === '') currentOperand = '0';
-        }
-
-        keys.addEventListener('click', e => {
-            const button = e.target.closest('button');
-            if (!button) return;
-
-            const { action, number, operator } = button.dataset;
-
-            if (number !== undefined) {
-                appendNumber(button.innerText);
-                updateDisplay();
-            }
-            if (operator !== undefined) {
-                chooseOperation(operator);
-                updateDisplay();
-            }
-            if (action === 'equals') {
-                compute();
-                updateDisplay();
-            }
-            if (action === 'clear') {
-                clear();
-                updateDisplay();
-            }
-            if (action === 'delete') {
-                deleteLast();
-                updateDisplay();
-            }
-            if (action === 'decimal') {
-                appendNumber('.');
-                updateDisplay();
-            }
-        });
-
-        // Afficher/Cacher la calculatrice
-        openCalculatorBtn.addEventListener('click', () => calculator.style.display = 'block');
-        closeCalculatorBtn.addEventListener('click', () => calculator.style.display = 'none');
-
-        // Rendre la calculatrice déplaçable
-        let isDragging = false;
-        let offset = { x: 0, y: 0 };
-        const header = document.getElementById('calculator-header');
-
-        header.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            offset.x = e.clientX - calculator.offsetLeft;
-            offset.y = e.clientY - calculator.offsetTop;
-            header.style.cursor = 'grabbing';
-        });
-
-        document.addEventListener('mousemove', (e) => {
-            if (!isDragging) return;
-            e.preventDefault();
-            calculator.style.left = `${e.clientX - offset.x}px`;
-            calculator.style.top = `${e.clientY - offset.y}px`;
-        });
-
-        document.addEventListener('mouseup', () => {
-            isDragging = false;
-            header.style.cursor = 'move';
-        });
     });
     </script>
 </body>
