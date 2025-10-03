@@ -15,7 +15,7 @@
             border-radius: 0.75rem;
             box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
         }
-        .form-section h2 {
+        .form-section h2.main-title {
             border-bottom: 2px solid #ef4444;
             padding-bottom: 0.5rem;
             margin-bottom: 1.5rem;
@@ -53,6 +53,14 @@
         #quotation-preview .text-center { text-align: center; }
         #quotation-preview .font-bold { font-weight: bold; }
 
+        .panel-controls button {
+            color: #9ca3af; /* gray-400 */
+        }
+        .panel-controls button:hover {
+            color: #374151; /* gray-700 */
+            background-color: #f3f4f6; /* gray-100 */
+        }
+
         @media (max-width: 640px) {
             #quotation-preview .header-flex {
                 flex-direction: column;
@@ -78,7 +86,7 @@
             <div class="lg:col-span-2 space-y-8">
                 
                 <div class="form-section">
-                    <h2>Informations Générales</h2>
+                    <h2 class="main-title">Informations Générales</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="documentTitleSelect" class="block text-sm font-medium text-gray-700 mb-1">Type de Document</label>
@@ -102,7 +110,7 @@
                     </div>
                 </div>
                 <div class="form-section">
-                    <h2>CONSIGNÉE (Client)</h2>
+                    <h2 class="main-title">CONSIGNÉE (Client)</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="clientName" class="block text-sm font-medium text-gray-700 mb-1">Nom du client</label>
@@ -123,14 +131,14 @@
                     </div>
                 </div>
                 <div class="form-section">
-                    <h2>Articles</h2>
+                    <h2 class="main-title">Articles</h2>
                     <div id="items-container" class="space-y-6"></div>
                     <button id="addItemBtn" class="mt-4 bg-red-500 text-white font-semibold py-2 px-4 rounded-md hover:bg-red-600 transition-colors">
                         Ajouter une ligne
                     </button>
                 </div>
                  <div class="form-section">
-                    <h2>Pied de Page</h2>
+                    <h2 class="main-title">Pied de Page</h2>
                     <div class="grid grid-cols-1 gap-6">
                         <div>
                             <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Note importante</label>
@@ -165,25 +173,45 @@
             </div>
 
             <div class="lg:col-span-1">
-                <div class="lg:sticky top-8 space-y-8">
-                    <div class="form-section">
-                        <h2 class="text-center">Action</h2>
-                        <div class="text-center my-6">
+                <div id="right-panels-container" class="lg:sticky top-8 space-y-8">
+                    
+                    <div class="form-section sortable-panel">
+                        <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">Action</h2>
+                            <div class="panel-controls flex items-center">
+                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                </button>
+                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="text-center">
                             <span class="text-3xl font-bold text-gray-800" id="totalDisplay">0.00 Ar</span>
                             <p class="text-gray-500">Total</p>
                         </div>
-                        <button id="generateImageBtn" class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-lg mb-4">
+                        <button id="generateImageBtn" class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-lg mt-4">
                             Télécharger l'Aperçu (Image)
                         </button>
                     </div>
-                    <div class="form-section">
-                        <div class="flex justify-between items-center">
-                            <h2 class="text-center mb-0 border-b-0 pb-0">Convertisseur</h2>
-                            <button id="swapConverterBtn" title="Inverser la conversion" class="p-2 rounded-full hover:bg-gray-200 transition-colors">
-                                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                            </button>
+
+                    <div class="form-section sortable-panel">
+                        <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
+                            <h2 class="text-lg font-semibold text-gray-800">Convertisseur</h2>
+                            <div class="panel-controls flex items-center">
+                                <button id="swapConverterBtn" title="Inverser la conversion" class="p-1 rounded transition-colors mr-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                </button>
+                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                </button>
+                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                            </div>
                         </div>
-                        <div class="mt-4">
+                        <div>
                             <label id="converterInputLabel" for="converterInput" class="block text-sm font-medium text-gray-700 mb-1"></label>
                             <input type="number" id="converterInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
                         </div>
@@ -192,9 +220,20 @@
                             <p id="converterOutputResult" class="text-2xl font-bold text-green-600"></p>
                         </div>
                     </div>
-                     <div class="form-section">
-                         <h2 class="text-center">Calculateur de Bénéfice</h2>
-                         <div class="mt-4">
+
+                    <div class="form-section sortable-panel">
+                        <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
+                             <h2 class="text-lg font-semibold text-gray-800">Calculateur de Bénéfice</h2>
+                            <div class="panel-controls flex items-center">
+                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+                                </button>
+                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors">
+                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+                         <div>
                             <label for="profit-base-amount" class="block text-sm font-medium text-gray-700 mb-1">Montant de base (Optionnel)</label>
                             <div class="flex space-x-2">
                                 <input type="number" id="profit-base-amount" placeholder="Total par défaut" class="w-2/3 p-2 border border-gray-300 rounded-md">
@@ -220,7 +259,7 @@
         </div>
 
         <div class="form-section mt-8">
-            <h2>Aperçu du Document</h2>
+            <h2 class="main-title">Aperçu du Document</h2>
             <div id="quotation-preview-container" class="overflow-x-auto">
                 <div id="quotation-preview">
                     </div>
@@ -525,7 +564,7 @@
 
         function updateProfitCalculator() {
             const customBaseAmountInput = parseFloat(document.getElementById('profit-base-amount').value) || 0;
-            const currency = document.getElementById('profit-base-currency').value; // 'MGA' or 'RMB'
+            const currency = document.getElementById('profit-base-currency').value;
             const percentage = parseFloat(document.getElementById('profit-percentage').value) || 0;
             
             let baseAmountInAriary = 0;
@@ -533,7 +572,7 @@
             if (customBaseAmountInput > 0) {
                  if (currency === 'RMB') {
                     baseAmountInAriary = customBaseAmountInput * state.exchangeRate;
-                } else { // 'MGA'
+                } else {
                     baseAmountInAriary = customBaseAmountInput;
                 }
             } else {
@@ -553,7 +592,48 @@
             document.getElementById('profit-rmb').textContent = `${profitRmb.toFixed(2)} RMB`;
         }
 
-        // Initialization of the quote generator
+        // --- PANEL REORDERING LOGIC ---
+        const rightPanelsContainer = document.getElementById('right-panels-container');
+
+        function updateMoveButtons() {
+            const panels = rightPanelsContainer.querySelectorAll('.sortable-panel');
+            panels.forEach((panel, index) => {
+                const upBtn = panel.querySelector('.move-up-btn');
+                const downBtn = panel.querySelector('.move-down-btn');
+
+                if (upBtn) upBtn.style.display = (index === 0) ? 'none' : 'block';
+                if (downBtn) downBtn.style.display = (index === panels.length - 1) ? 'none' : 'block';
+            });
+        }
+
+        rightPanelsContainer.addEventListener('click', (e) => {
+            const upBtn = e.target.closest('.move-up-btn');
+            const downBtn = e.target.closest('.move-down-btn');
+            
+            if (!upBtn && !downBtn) return;
+
+            const panel = e.target.closest('.sortable-panel');
+            if (!panel) return;
+
+            if (upBtn) {
+                const prevPanel = panel.previousElementSibling;
+                if (prevPanel) {
+                    rightPanelsContainer.insertBefore(panel, prevPanel);
+                    updateMoveButtons();
+                }
+            }
+
+            if (downBtn) {
+                const nextPanel = panel.nextElementSibling;
+                if (nextPanel) {
+                    rightPanelsContainer.insertBefore(nextPanel, panel);
+                    updateMoveButtons();
+                }
+            }
+        });
+
+
+        // --- EVENT LISTENERS INITIALIZATION ---
         document.getElementById('quotationDate').value = state.quotationDate;
         syncStateWithForm();
         renderItemsForm();
@@ -636,7 +716,10 @@
         document.getElementById('profit-percentage').addEventListener('input', updateProfitCalculator);
         document.getElementById('profit-base-amount').addEventListener('input', updateProfitCalculator);
         document.getElementById('profit-base-currency').addEventListener('change', updateProfitCalculator);
+        
+        // Initial calls
         updateConverterUI();
+        updateMoveButtons(); // Set initial state for move buttons
     });
     </script>
 </body>
