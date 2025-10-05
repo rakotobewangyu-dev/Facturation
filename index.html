@@ -6,72 +6,53 @@
     <title>Générateur de Quotation - Aridago Logistique</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, onSnapshot, deleteDoc, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBa93ZQ34S4JEz6lc7yt_2ZrIiTc2Jqh9c",
+            authDomain: "boutique-aridago.firebaseapp.com",
+            projectId: "boutique-aridago",
+            storageBucket: "boutique-aridago.appspot.com",
+            messagingSenderId: "173722302642",
+            appId: "1:173722302642:web:1cad436874f3b4270eb1ab"
+        };
+        
+        try {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+            console.log("Firebase initialized successfully.");
+
+            window.firebase = { auth, db, collection, doc, setDoc, onSnapshot, deleteDoc, serverTimestamp, query, orderBy };
+            window.firebaseEnabled = true;
+            
+            signInAnonymously(auth).catch((error) => console.error("Anonymous sign-in failed:", error));
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) document.dispatchEvent(new Event('firebase-auth-ready'));
+            });
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
+            window.firebaseEnabled = false;
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
         body { font-family: 'Poppins', sans-serif; }
-        .form-section {
-            background-color: white;
-            padding: 1.5rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-        }
-        .form-section h2.main-title {
-            border-bottom: 2px solid #ef4444;
-            padding-bottom: 0.5rem;
-            margin-bottom: 1.5rem;
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #1f2937;
-        }
-        #quotation-preview {
-            background: white;
-            font-family: 'Helvetica', 'Arial', sans-serif;
-            color: #111827;
-            border-radius: 0.5rem;
-            overflow: hidden;
-            border: 2px solid #facc15;
-            width: 100%;
-        }
-        #quotation-preview table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 1.5rem;
-            table-layout: fixed;
-        }
-        #quotation-preview th, #quotation-preview td {
-            border: 1px solid #d1d5db;
-            padding: 0.5rem;
-            font-size: 0.8rem;
-            word-wrap: break-word;
-        }
-        #quotation-preview th {
-            background-color: #3b82f6;
-            color: white;
-            font-weight: bold;
-        }
-        #quotation-preview .text-right { text-align: right; }
-        #quotation-preview .text-center { text-align: center; }
-        #quotation-preview .font-bold { font-weight: bold; }
-
-        .panel-controls button {
-            color: #9ca3af; /* gray-400 */
-        }
-        .panel-controls button:hover {
-            color: #374151; /* gray-700 */
-            background-color: #f3f4f6; /* gray-100 */
-        }
-
-        @media (max-width: 640px) {
-            #quotation-preview .header-flex {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            #quotation-preview .header-flex div:last-child {
-                text-align: left;
-                margin-top: 1rem;
-            }
-            #quotation-preview h3 { font-size: 2rem; }
-        }
+        .form-section { background-color: white; padding: 1.5rem; border-radius: 0.75rem; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); }
+        .form-section h2.main-title { border-bottom: 2px solid #ef4444; padding-bottom: 0.5rem; margin-bottom: 1.5rem; font-size: 1.25rem; font-weight: 600; color: #1f2937; }
+        #quotation-preview { background: white; font-family: 'Helvetica', 'Arial', sans-serif; color: #111827; border-radius: 0.5rem; overflow: hidden; border: 2px solid #facc15; width: 100%; }
+        #quotation-preview table { width: 100%; border-collapse: collapse; margin-top: 1.5rem; table-layout: fixed; }
+        #quotation-preview th, #quotation-preview td { border: 1px solid #d1d5db; padding: 0.5rem; font-size: 0.8rem; word-wrap: break-word; }
+        #quotation-preview th { background-color: #3b82f6; color: white; font-weight: bold; }
+        .invoice-list-item:hover { background-color: #f9fafb; }
+        .panel-controls button:hover { color: #374151; background-color: #f3f4f6; }
     </style>
 </head>
 <body class="bg-gray-100 p-4 lg:p-8">
@@ -84,20 +65,17 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-8">
-                
+                <!-- All your form sections from your original file are here -->
                 <div class="form-section">
                     <h2 class="main-title">Informations Générales</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="documentTitleSelect" class="block text-sm font-medium text-gray-700 mb-1">Type de Document</label>
-                            <select id="documentTitleSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
-                                <option value="QUOTATION">Quotation</option>
-                                <option value="DEVIS">Devis</option>
-                            </select>
+                            <select id="documentTitleSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"></select>
                         </div>
                         <div>
                             <label for="quotationNumber" class="block text-sm font-medium text-gray-700 mb-1">Numéro de Référence</label>
-                            <input type="text" id="quotationNumber" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500" value="0000000001">
+                            <input type="text" id="quotationNumber" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
                         </div>
                         <div>
                             <label for="quotationDate" class="block text-sm font-medium text-gray-700 mb-1">Date</label>
@@ -105,7 +83,7 @@
                         </div>
                         <div>
                             <label for="quotationCity" class="block text-sm font-medium text-gray-700 mb-1">Ville</label>
-                            <input type="text" id="quotationCity" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500" value="Antananarivo">
+                            <input type="text" id="quotationCity" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
                         </div>
                     </div>
                 </div>
@@ -114,19 +92,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="clientName" class="block text-sm font-medium text-gray-700 mb-1">Nom du client</label>
-                            <input type="text" id="clientName" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500" value="Nom du client">
+                            <input type="text" id="clientName" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
                         </div>
                         <div>
                             <label for="clientPhone" class="block text-sm font-medium text-gray-700 mb-1">Téléphone</label>
-                            <input type="text" id="clientPhone" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500" value="+261 34 00 0000 00">
+                            <input type="text" id="clientPhone" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
                         </div>
                         <div>
                             <label for="clientEmail" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                            <input type="email" id="clientEmail" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500" value="nomprenom@exemple.com">
+                            <input type="email" id="clientEmail" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
                         </div>
                         <div>
                             <label for="clientAddress" class="block text-sm font-medium text-gray-700 mb-1">Adresse</label>
-                            <input type="text" id="clientAddress" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500" value="Antananarivo, centre-ville 123">
+                            <input type="text" id="clientAddress" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
                         </div>
                     </div>
                 </div>
@@ -142,21 +120,16 @@
                     <div class="grid grid-cols-1 gap-6">
                         <div>
                             <label for="notes" class="block text-sm font-medium text-gray-700 mb-1">Note importante</label>
-                            <textarea id="notes" rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">Les frais de transport Chine à Madagascar ne sont pas inclus dans cette Quotation.</textarea>
+                            <textarea id="notes" rows="3" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"></textarea>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <label for="paymentMethodSelect" class="block text-sm font-medium text-gray-700 mb-1">Mode de paiement</label>
-                                <select id="paymentMethodSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
-                                    <option>Espèces</option>
-                                    <option>Mvola</option>
-                                    <option>Airtel Money</option>
-                                    <option>Orange Money</option>
-                                </select>
+                                <select id="paymentMethodSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500"></select>
                             </div>
                              <div>
                                 <label for="exchangeRateInput" class="block text-sm font-medium text-gray-700 mb-1">Cours de change (1 RMB en Ariary)</label>
-                                <input type="number" id="exchangeRateInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500" value="700">
+                                <input type="number" id="exchangeRateInput" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
                             </div>
                         </div>
                          <div>
@@ -165,24 +138,23 @@
                         </div>
                         <div>
                             <label for="senderInfo" class="block text-sm font-medium text-gray-700 mb-1">Informations de l'expéditeur</label>
-                            <input type="text" id="senderInfo" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500" value="Mr. Wang Yu (+86 15600021123)">
+                            <input type="text" id="senderInfo" class="w-full p-2 border border-gray-300 rounded-md focus:ring-red-500 focus:border-red-500">
                         </div>
                     </div>
                 </div>
-
             </div>
 
             <div class="lg:col-span-1">
                 <div id="right-panels-container" class="lg:sticky top-8 space-y-8">
-                    
-                     <div class="form-section sortable-panel">
+                    <!-- Your original right-side panels (Profit Calculator, Converter) are kept here -->
+                    <div class="form-section sortable-panel">
                         <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
                              <h2 class="text-lg font-semibold text-gray-800">Calculateur de Bénéfice</h2>
                             <div class="panel-controls flex items-center">
-                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors">
+                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors text-gray-400 hover:text-gray-700 hover:bg-gray-100">
                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
                                 </button>
-                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors">
+                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors text-gray-400 hover:text-gray-700 hover:bg-gray-100">
                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                 </button>
                             </div>
@@ -208,18 +180,17 @@
                              <p id="profit-rmb" class="text-xl font-bold text-blue-600">0.00 RMB</p>
                          </div>
                     </div>
-
                     <div class="form-section sortable-panel">
                         <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
                             <h2 class="text-lg font-semibold text-gray-800">Convertisseur</h2>
                             <div class="panel-controls flex items-center">
-                                <button id="swapConverterBtn" title="Inverser la conversion" class="p-1 rounded transition-colors mr-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                                <button id="swapConverterBtn" title="Inverser la conversion" class="p-1 rounded transition-colors text-gray-400 hover:text-gray-700 hover:bg-gray-100 mr-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
                                 </button>
-                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors">
+                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors text-gray-400 hover:text-gray-700 hover:bg-gray-100">
                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
                                 </button>
-                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors">
+                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors text-gray-400 hover:text-gray-700 hover:bg-gray-100">
                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                                 </button>
                             </div>
@@ -233,22 +204,23 @@
                             <p id="converterOutputResult" class="text-2xl font-bold text-green-600"></p>
                         </div>
                     </div>
-
                     <div class="form-section sortable-panel">
                         <div class="flex justify-between items-center pb-4 border-b border-gray-200 mb-4">
                             <h2 class="text-lg font-semibold text-gray-800">Action</h2>
-                            <div class="panel-controls flex items-center">
-                                <button title="Monter" class="move-up-btn p-1 rounded transition-colors">
-                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                                </button>
-                                <button title="Descendre" class="move-down-btn p-1 rounded transition-colors">
-                                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </button>
-                            </div>
+                            <!-- Move buttons removed from Action panel as it should stay at the bottom -->
                         </div>
                         <div class="text-center">
                             <span class="text-3xl font-bold text-gray-800" id="totalDisplay">0.00 Ar</span>
                             <p class="text-gray-500">Total</p>
+                        </div>
+                        <!-- NEW SAVE/NEW BUTTONS -->
+                        <div class="mt-4 space-y-2">
+                             <button id="saveInvoiceBtn" class="w-full bg-green-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-green-600 transition-colors text-lg">
+                                Enregistrer
+                            </button>
+                             <button id="newInvoiceBtn" class="w-full bg-gray-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-600 transition-colors">
+                                Nouveau
+                            </button>
                         </div>
                         <button id="generateImageBtn" class="w-full bg-blue-500 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-lg mt-4">
                             Télécharger l'Aperçu (Image)
@@ -262,21 +234,37 @@
         <div class="form-section mt-8">
             <h2 class="main-title">Aperçu du Document</h2>
             <div id="quotation-preview-container" class="overflow-x-auto">
-                <div id="quotation-preview">
-                    </div>
+                <div id="quotation-preview"></div>
+            </div>
+        </div>
+        
+        <!-- NEW SAVED DOCUMENTS SECTION -->
+        <div class="form-section mt-8">
+            <h2 class="main-title">Documents Enregistrés</h2>
+            <div id="invoice-list-container" class="space-y-3">
+                <p id="loading-invoices" class="text-gray-500">Chargement des documents...</p>
             </div>
         </div>
     </div>
+    
+    <!-- NEW TOAST NOTIFICATION -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-gray-800 text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-10 transition-all duration-300">
+        <p id="toast-message"></p>
+    </div>
 
-    <script>
+    <script type="module">
     document.addEventListener('DOMContentLoaded', () => {
-        // --- LOGIC FOR THE QUOTATION GENERATOR ---
         const logoTopLeftUrl = "https://i.ibb.co/HDBqLXCT/Aridago-Logo-removebg-preview.png";
         const logoBottomRightUrl = "https://i.ibb.co/mFyw1zmW/Sary-sonia.png";
+        let isRmbToAriary = true;
+        
+        let state = {};
 
-        let state = {
+        // This is the template for a new document
+        const initialState = {
+            firestoreId: null,
             documentTitle: 'QUOTATION',
-            quotationNumber: '0000000001',
+            quotationNumber: `DOC-${Date.now().toString().slice(-6)}`,
             quotationDate: new Date().toISOString().split('T')[0],
             quotationCity: 'Antananarivo',
             clientName: 'Nom du client',
@@ -284,9 +272,7 @@
             clientEmail: 'nomprenom@exemple.com',
             clientAddress: 'Antananarivo, centre-ville 123',
             items: [
-                { id: 1, description: 'Produit 1', specification: 'Spécification du produit 1', quantity: 1, price: 100000, isText: false, directPrice: 0, align: 'left' },
-                { id: 2, description: 'Produit 2', specification: 'Détails pour le produit 2 avec beaucoup de texte ici, pour tester la justification et le débordement de texte dans la colonne. Cela devrait s\'enrouler joliment sans perturber le tableau.', quantity: 2, price: 30000, isText: false, directPrice: 0, align: 'left' },
-                { id: 3, description: 'Dédouanement + Fret', specification: '0,05 Cbm', quantity: 1, price: 0, isText: true, directPrice: 150000, align: 'left' }
+                { id: Date.now(), description: 'Produit 1', specification: 'Spécification du produit 1', quantity: 1, price: 100000, isText: false, directPrice: 0, align: 'left' }
             ],
             notes: 'Les frais de transport Chine à Madagascar ne sont pas inclus dans cette Quotation.',
             paymentMethod: 'Espèces',
@@ -295,226 +281,36 @@
             senderInfo: 'Mr. Wang Yu (+86 15600021123)',
         };
 
-        let isRmbToAriary = true;
-
-        function getFormattedDate(dateString) {
-            if (!dateString) return '';
-            const date = new Date(dateString + 'T00:00:00');
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            let formatted = new Intl.DateTimeFormat('fr-FR', options).format(date);
-            return formatted.charAt(0).toUpperCase() + formatted.slice(1);
-        }
-
-        function getFormattedPaymentDate(dateString) {
-            if (!dateString) return '';
-            const date = new Date(dateString);
-            date.setDate(date.getDate() + 1); 
-            const day = String(date.getDate()).padStart(2, '0');
-            const month = String(date.getMonth() + 1).padStart(2, '0');
-            const year = date.getFullYear();
-            return `${day}/${month}/${year}`;
+        // --- Core Application Functions ---
+        function resetState() {
+            state = JSON.parse(JSON.stringify(initialState));
+            state.quotationNumber = `DOC-${Date.now().toString().slice(-6)}`;
+            state.quotationDate = new Date().toISOString().split('T')[0];
+            syncFormWithState();
+            showToast("Nouveau formulaire prêt.");
         }
         
-        function renderQuotationPreview() {
-            const previewContainer = document.getElementById('quotation-preview');
-            
-            let tableRows = '';
-            let total = 0;
-
-            state.items.forEach(item => {
-                if (item.isText) {
-                    const directPrice = item.directPrice || 0;
-                    total += directPrice;
-                    tableRows += `
-                        <tr style="background-color: #f3f4f6;">
-                            <td colspan="2" class="font-bold" style="text-align: ${item.align || 'left'};">${item.description}</td>
-                            <td class="text-center">${item.specification}</td>
-                            <td></td>
-                            <td class="text-right font-bold">${directPrice.toLocaleString('fr-FR')}</td>
-                        </tr>
-                    `;
-                } else {
-                    const itemTotal = item.quantity * item.price;
-                    total += itemTotal;
-                    tableRows += `
-                        <tr>
-                            <td>${item.description}</td>
-                            <td>${item.specification}</td>
-                            <td class="text-center">${item.quantity.toLocaleString('fr-FR')}</td>
-                            <td class="text-right">${item.price.toLocaleString('fr-FR')}</td>
-                            <td class="text-right">${itemTotal.toLocaleString('fr-FR')}</td>
-                        </tr>
-                    `;
-                }
-            });
-
-            const totalRmb = state.exchangeRate > 0 ? total / state.exchangeRate : 0;
-
-            tableRows += `
-                <tr>
-                    <td colspan="3"></td>
-                    <td class="text-right font-bold" style="font-size: 1.1em;">TOTAUX</td>
-                    <td class="text-right font-bold" style="font-size: 1.2em; vertical-align: middle;">
-                        ${total.toLocaleString('fr-FR')} Ar
-                        <br>
-                        <span style="font-size: 0.8em; font-weight: 500;">(${totalRmb.toFixed(2)} RMB)</span>
-                    </td>
-                </tr>
-            `;
-            
-            let paymentTermsText = `(1) Mode de paiement: ${state.paymentMethod}\n(2) Prix de Change: 1 RMB = ${state.exchangeRate} Ariary`;
-            if (state.paymentDate) {
-                 paymentTermsText += `\n(3) Date de paiement : ${getFormattedPaymentDate(state.paymentDate)}`;
-            }
-            
-            let signatureHtml = '';
-            if (state.documentTitle === 'DEVIS') {
-                signatureHtml = `<img src="${logoBottomRightUrl}" alt="Signature" style="width: 220px; height: auto; margin-left: auto; margin-top: 0.5rem;">`;
-            }
-
-            previewContainer.innerHTML = `
-                <div style="background-color: #fefce8; padding: 1rem 1.5rem; border-bottom: 3px solid #f59e0b;">
-                     <div class="header-flex" style="display: flex; justify-content: space-between; align-items: flex-start;">
-                        <div>
-                            <img src="${logoTopLeftUrl}" alt="Aridago Logo" style="width: 150px; height: auto;">
-                        </div>
-                        <div class="text-right">
-                            <h3 style="font-size: 2.2rem; font-weight: 700; color: #000000; line-height: 1;">${state.documentTitle}</h3>
-                            <p style="margin-top: 0.5rem; font-size: 0.9rem;"><strong>Numéro :</strong> ${state.quotationNumber}</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div style="padding: 1.5rem;">
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap;">
-                         <div style="margin-bottom: 1rem;">
-                            <p style="background-color: #e5e7eb; padding: 0.25rem 0.5rem; display: inline-block; font-weight: bold; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;">CONSIGNÉE À :</p>
-                            <p><span class="font-bold">Nom :</span> ${state.clientName}</p>
-                            <p><span class="font-bold">Tél :</span> ${state.clientPhone}</p>
-                            <p><span class="font-bold">Email :</span> ${state.clientEmail}</p>
-                            <p><span class="font-bold">Adresse :</span> ${state.clientAddress}</p>
-                        </div>
-                        <p class="text-right" style="width: 100%; md:width: auto;"><strong>${state.quotationCity}</strong>, ${getFormattedDate(state.quotationDate)}</p>
-                    </div>
-
-                    <div style="overflow-x: auto;">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th style="width: 25%;">DESCRIPTION</th>
-                                    <th style="width: 35%;">SPÉCIFICATION</th>
-                                    <th style="width: 10%;">QUANTITÉ</th>
-                                    <th style="width: 15%;">PRIX UNITAIRE (Ar)</th>
-                                    <th style="width: 15%;">TOTAL (Ar)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${tableRows}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div style="display: grid; grid-template-columns: 1fr; md:grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 2rem; align-items: start;">
-                        <div style="font-size: 0.8rem;">
-                            <div style="margin-bottom: 1rem;">
-                                <p class="font-bold">Note importante:</p>
-                                <p style="white-space: pre-wrap;">${state.notes}</p>
-                            </div>
-                             <div>
-                                <p class="font-bold">Terme de paiement:</p>
-                                <p style="white-space: pre-wrap;">${paymentTermsText}</p>
-                            </div>
-                        </div>
-                        <div style="text-align: right;">
-                             <p class="font-bold" style="padding-right: 38px;">Expéditeur</p>
-                             ${signatureHtml}
-                             <p style="margin-top: 1rem;">${state.senderInfo}</p>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        function renderItemsForm() {
-            const container = document.getElementById('items-container');
-            container.innerHTML = '';
-            state.items.forEach((item, index) => {
-                const row = document.createElement('div');
-                row.className = 'grid grid-cols-12 gap-x-2 gap-y-3 items-center border-t pt-4 first:border-t-0 first:pt-0';
-                
-                const standardInputs = `
-                    <div class="col-span-6 md:col-span-3">
-                        <label class="block text-xs text-gray-500">Quantité</label>
-                        <input type="number" placeholder="Qté" data-id="${item.id}" data-field="quantity" value="${item.quantity}" class="w-full p-2 border border-gray-300 rounded-md">
-                    </div>
-                    <div class="col-span-6 md:col-span-3">
-                        <label class="block text-xs text-gray-500">Prix Unitaire (Ar)</label>
-                        <input type="number" placeholder="P.U. (Ar)" data-id="${item.id}" data-field="price" value="${item.price}" class="w-full p-2 border border-gray-300 rounded-md">
-                    </div>
-                `;
-
-                const textOnlyInput = `
-                    <div class="col-span-12 md:col-span-6">
-                         <label class="block text-xs text-gray-500">Prix Total (Ar)</label>
-                         <input type="number" placeholder="Prix Total (Ar)" data-id="${item.id}" data-field="directPrice" value="${item.directPrice || 0}" class="w-full p-2 border border-gray-300 rounded-md">
-                    </div>
-                `;
-
-                row.innerHTML = `
-                    <div class="col-span-12 md:col-span-6">
-                        <label class="block text-xs text-gray-500">Description</label>
-                        <input type="text" placeholder="Description" data-id="${item.id}" data-field="description" value="${item.description}" class="w-full p-2 border border-gray-300 rounded-md">
-                    </div>
-                    <div class="col-span-12 md:col-span-6">
-                        <label class="block text-xs text-gray-500">Spécification</label>
-                        <input type="text" placeholder="Spécification" data-id="${item.id}" data-field="specification" value="${item.specification || ''}" class="w-full p-2 border border-gray-300 rounded-md">
-                    </div>
-                    
-                    ${item.isText ? textOnlyInput : standardInputs}
-                    
-                    <div class="col-span-12 flex items-center justify-between">
-                         <div class="flex items-center">
-                            <input type="checkbox" data-id="${item.id}" data-field="isText" class="h-5 w-5 text-red-600 focus:ring-red-500 border-gray-300 rounded" ${item.isText ? 'checked' : ''}>
-                            <label class="ml-2 text-sm text-gray-600">Texte seul / Service</label>
-                        </div>
-                        <div class="flex items-center space-x-2">
-                             <button title="Monter" data-id="${item.id}" class="move-up-btn p-1 rounded ${index === 0 ? 'opacity-25 cursor-not-allowed' : 'hover:bg-gray-200'}" ${index === 0 ? 'disabled' : ''}>
-                               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
-                            </button>
-                            <button title="Descendre" data-id="${item.id}" class="move-down-btn p-1 rounded ${index === state.items.length - 1 ? 'opacity-25 cursor-not-allowed' : 'hover:bg-gray-200'}" ${index === state.items.length - 1 ? 'disabled' : ''}>
-                               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                            </button>
-                            <button data-id="${item.id}" class="removeItemBtn bg-red-100 text-red-600 p-2 rounded-full hover:bg-red-200 transition-colors">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                            </button>
-                        </div>
-                    </div>
-                `;
-                container.appendChild(row);
-            });
-            updateTotalAndPreview();
+        // This function populates the form inputs with data from the 'state' object
+        function syncFormWithState() {
+            document.getElementById('documentTitleSelect').innerHTML = `<option>QUOTATION</option><option>DEVIS</option>`;
+            document.getElementById('documentTitleSelect').value = state.documentTitle;
+            document.getElementById('quotationNumber').value = state.quotationNumber;
+            document.getElementById('quotationDate').value = state.quotationDate;
+            document.getElementById('quotationCity').value = state.quotationCity;
+            document.getElementById('clientName').value = state.clientName;
+            document.getElementById('clientPhone').value = state.clientPhone;
+            document.getElementById('clientEmail').value = state.clientEmail;
+            document.getElementById('clientAddress').value = state.clientAddress;
+            document.getElementById('notes').value = state.notes;
+            document.getElementById('paymentMethodSelect').innerHTML = `<option>Espèces</option><option>Mvola</option><option>Airtel Money</option><option>Orange Money</option>`;
+            document.getElementById('paymentMethodSelect').value = state.paymentMethod;
+            document.getElementById('exchangeRateInput').value = state.exchangeRate;
+            document.getElementById('paymentDate').value = state.paymentDate;
+            document.getElementById('senderInfo').value = state.senderInfo;
+            renderItemsForm();
         }
 
-        function updateTotalAndPreview() {
-            const total = state.items.reduce((acc, item) => {
-                if (item.isText) {
-                    return acc + (item.directPrice || 0);
-                } else {
-                    return acc + (item.quantity * item.price);
-                }
-            }, 0);
-
-            const totalRmb = state.exchangeRate > 0 ? total / state.exchangeRate : 0;
-            
-            document.getElementById('totalDisplay').innerHTML = `
-                ${total.toLocaleString('fr-FR')} Ar
-                <br>
-                <span class="text-xl font-semibold text-gray-500">(${totalRmb.toFixed(2)} RMB)</span>`;
-                
-            renderQuotationPreview();
-            updateProfitCalculator();
-        }
-
+        // This function updates the 'state' object with data from the form inputs
         function syncStateWithForm() {
             state.documentTitle = document.getElementById('documentTitleSelect').value;
             state.quotationNumber = document.getElementById('quotationNumber').value;
@@ -532,197 +328,134 @@
             updateTotalAndPreview();
         }
 
-        function updateConverterUI() {
-            const inputLabel = document.getElementById('converterInputLabel');
-            const outputLabel = document.getElementById('converterOutputLabel');
-            const converterInput = document.getElementById('converterInput');
-
-            if (isRmbToAriary) {
-                inputLabel.textContent = 'Montant en RMB (¥)';
-                outputLabel.textContent = 'Équivalent en Ariary';
-                converterInput.placeholder = 'Entrez la valeur en RMB';
-            } else {
-                inputLabel.textContent = 'Montant en Ariary (Ar)';
-                outputLabel.textContent = 'Équivalent en RMB';
-                converterInput.placeholder = 'Entrez la valeur en Ariary';
-            }
-            updateConverter();
-        }
-
-        function updateConverter() {
-            const amount = parseFloat(document.getElementById('converterInput').value) || 0;
-            const resultEl = document.getElementById('converterOutputResult');
-            const exchangeRate = state.exchangeRate;
-
-            if (isRmbToAriary) {
-                const calculatedAriary = amount * exchangeRate;
-                resultEl.textContent = `${calculatedAriary.toLocaleString('fr-FR')} Ar`;
-            } else {
-                const calculatedRmb = exchangeRate > 0 ? amount / exchangeRate : 0;
-                resultEl.textContent = `${calculatedRmb.toFixed(2).replace('.', ',')} RMB`;
-            }
-        }
-
-        function updateProfitCalculator() {
-            const customBaseAmountInput = parseFloat(document.getElementById('profit-base-amount').value) || 0;
-            const currency = document.getElementById('profit-base-currency').value;
-            const percentage = parseFloat(document.getElementById('profit-percentage').value) || 0;
-            
-            let baseAmountInAriary = 0;
-
-            if (customBaseAmountInput > 0) {
-                 if (currency === 'RMB') {
-                    baseAmountInAriary = customBaseAmountInput * state.exchangeRate;
-                } else {
-                    baseAmountInAriary = customBaseAmountInput;
-                }
-            } else {
-                baseAmountInAriary = state.items.reduce((acc, item) => {
-                    if (item.isText) {
-                        return acc + (item.directPrice || 0);
-                    } else {
-                        return acc + (item.quantity * item.price);
-                    }
-                }, 0);
-            }
-
-            const profitAriary = (baseAmountInAriary * percentage) / 100;
-            const profitRmb = state.exchangeRate > 0 ? profitAriary / state.exchangeRate : 0;
-
-            document.getElementById('profit-ariary').textContent = `${profitAriary.toLocaleString('fr-FR')} Ar`;
-            document.getElementById('profit-rmb').textContent = `${profitRmb.toFixed(2)} RMB`;
-        }
-
-        // --- PANEL REORDERING LOGIC ---
-        const rightPanelsContainer = document.getElementById('right-panels-container');
-
-        function updateMoveButtons() {
-            const panels = rightPanelsContainer.querySelectorAll('.sortable-panel');
-            panels.forEach((panel, index) => {
-                const upBtn = panel.querySelector('.move-up-btn');
-                const downBtn = panel.querySelector('.move-down-btn');
-
-                if (upBtn) upBtn.style.display = (index === 0) ? 'none' : 'block';
-                if (downBtn) downBtn.style.display = (index === panels.length - 1) ? 'none' : 'block';
+        // --- All your original functions (renderQuotationPreview, renderItemsForm, etc.) are kept here ---
+        function getFormattedDate(dateString) { if (!dateString) return ''; const date = new Date(dateString + 'T00:00:00'); const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }; let formatted = new Intl.DateTimeFormat('fr-FR', options).format(date); return formatted.charAt(0).toUpperCase() + formatted.slice(1); }
+        function getFormattedPaymentDate(dateString) { if (!dateString) return ''; const date = new Date(dateString); date.setDate(date.getDate() + 1); const day = String(date.getDate()).padStart(2, '0'); const month = String(date.getMonth() + 1).padStart(2, '0'); const year = date.getFullYear(); return `${day}/${month}/${year}`; }
+        
+        function renderQuotationPreview() {
+            const previewContainer = document.getElementById('quotation-preview');
+            let tableRows = '';
+            let total = 0;
+            if(!state.items) state.items = [];
+            state.items.forEach(item => {
+                if (item.isText) { const directPrice = item.directPrice || 0; total += directPrice; tableRows += `<tr style="background-color: #f3f4f6;"><td colspan="2" class="font-bold" style="text-align: ${item.align || 'left'};">${item.description}</td><td class="text-center">${item.specification}</td><td></td><td class="text-right font-bold">${directPrice.toLocaleString('fr-FR')}</td></tr>`; } else { const itemTotal = (item.quantity || 0) * (item.price || 0); total += itemTotal; tableRows += `<tr><td>${item.description}</td><td>${item.specification}</td><td class="text-center">${(item.quantity || 0).toLocaleString('fr-FR')}</td><td class="text-right">${(item.price || 0).toLocaleString('fr-FR')}</td><td class="text-right">${itemTotal.toLocaleString('fr-FR')}</td></tr>`; }
             });
+            const totalRmb = state.exchangeRate > 0 ? total / state.exchangeRate : 0;
+            tableRows += `<tr><td colspan="3"></td><td class="text-right font-bold" style="font-size: 1.1em;">TOTAUX</td><td class="text-right font-bold" style="font-size: 1.2em; vertical-align: middle;">${total.toLocaleString('fr-FR')} Ar<br><span style="font-size: 0.8em; font-weight: 500;">(${totalRmb.toFixed(2)} RMB)</span></td></tr>`;
+            let paymentTermsText = `(1) Mode de paiement: ${state.paymentMethod}\n(2) Prix de Change: 1 RMB = ${state.exchangeRate} Ariary`;
+            if (state.paymentDate) { paymentTermsText += `\n(3) Date de paiement : ${getFormattedPaymentDate(state.paymentDate)}`; }
+            let signatureHtml = state.documentTitle === 'DEVIS' ? `<img src="${logoBottomRightUrl}" alt="Signature" style="width: 220px; height: auto; margin-left: auto; margin-top: 0.5rem;">` : '';
+            previewContainer.innerHTML = `<div style="background-color: #fefce8; padding: 1rem 1.5rem; border-bottom: 3px solid #f59e0b;"><div class="header-flex" style="display: flex; justify-content: space-between; align-items: flex-start;"><div><img src="${logoTopLeftUrl}" alt="Aridago Logo" style="width: 150px; height: auto;"></div><div class="text-right"><h3 style="font-size: 2.2rem; font-weight: 700; color: #000000; line-height: 1;">${state.documentTitle}</h3><p style="margin-top: 0.5rem; font-size: 0.9rem;"><strong>Numéro :</strong> ${state.quotationNumber}</p></div></div></div><div style="padding: 1.5rem;"><div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2rem; flex-wrap: wrap;"><div style="margin-bottom: 1rem;"><p style="background-color: #e5e7eb; padding: 0.25rem 0.5rem; display: inline-block; font-weight: bold; margin-bottom: 0.5rem; border-radius: 4px; font-size: 0.9rem;">CONSIGNÉE À :</p><p><span class="font-bold">Nom :</span> ${state.clientName}</p><p><span class="font-bold">Tél :</span> ${state.clientPhone}</p><p><span class="font-bold">Email :</span> ${state.clientEmail}</p><p><span class="font-bold">Adresse :</span> ${state.clientAddress}</p></div><p class="text-right" style="width: 100%; md:width: auto;"><strong>${state.quotationCity}</strong>, ${getFormattedDate(state.quotationDate)}</p></div><div style="overflow-x: auto;"><table><thead><tr><th style="width: 25%;">DESCRIPTION</th><th style="width: 35%;">SPÉCIFICATION</th><th style="width: 10%;">QUANTITÉ</th><th style="width: 15%;">PRIX UNITAIRE (Ar)</th><th style="width: 15%;">TOTAL (Ar)</th></tr></thead><tbody>${tableRows}</tbody></table></div><div style="display: grid; grid-template-columns: 1fr; md:grid-template-columns: 2fr 1fr; gap: 2rem; margin-top: 2rem; align-items: start;"><div style="font-size: 0.8rem;"><div style="margin-bottom: 1rem;"><p class="font-bold">Note importante:</p><p style="white-space: pre-wrap;">${state.notes}</p></div><div><p class="font-bold">Terme de paiement:</p><p style="white-space: pre-wrap;">${paymentTermsText}</p></div></div><div style="text-align: right;"><p class="font-bold" style="padding-right: 38px;">Expéditeur</p>${signatureHtml}<p style="margin-top: 1rem;">${state.senderInfo}</p></div></div></div>`;
+        }
+        
+        function renderItemsForm() {
+            const container = document.getElementById('items-container');
+            container.innerHTML = '';
+            if(!state.items) state.items = [];
+            state.items.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'grid grid-cols-12 gap-x-2 gap-y-3 items-center border-t pt-4 first:border-t-0 first:pt-0';
+                const standardInputs = `<div class="col-span-6 md:col-span-3"><label class="block text-xs text-gray-500">Quantité</label><input type="number" placeholder="Qté" data-id="${item.id}" data-field="quantity" value="${item.quantity}" class="w-full p-2 border border-gray-300 rounded-md"></div><div class="col-span-6 md:col-span-3"><label class="block text-xs text-gray-500">Prix Unitaire (Ar)</label><input type="number" placeholder="P.U. (Ar)" data-id="${item.id}" data-field="price" value="${item.price}" class="w-full p-2 border border-gray-300 rounded-md"></div>`;
+                const textOnlyInput = `<div class="col-span-12 md:col-span-6"><label class="block text-xs text-gray-500">Prix Total (Ar)</label><input type="number" placeholder="Prix Total (Ar)" data-id="${item.id}" data-field="directPrice" value="${item.directPrice || 0}" class="w-full p-2 border border-gray-300 rounded-md"></div>`;
+                row.innerHTML = `<div class="col-span-12 md:col-span-6"><label class="block text-xs text-gray-500">Description</label><input type="text" placeholder="Description" data-id="${item.id}" data-field="description" value="${item.description}" class="w-full p-2 border border-gray-300 rounded-md"></div><div class="col-span-12 md:col-span-6"><label class="block text-xs text-gray-500">Spécification</label><input type="text" placeholder="Spécification" data-id="${item.id}" data-field="specification" value="${item.specification || ''}" class="w-full p-2 border border-gray-300 rounded-md"></div>${item.isText ? textOnlyInput : standardInputs}<div class="col-span-12 flex items-center justify-between"><div class="flex items-center"><input type="checkbox" data-id="${item.id}" data-field="isText" class="h-5 w-5 text-red-600 focus:ring-red-500 border-gray-300 rounded" ${item.isText ? 'checked' : ''}><label class="ml-2 text-sm text-gray-600">Texte seul / Service</label></div><div class="flex items-center space-x-2"><button title="Monter" data-id="${item.id}" class="move-up-btn p-1 rounded ${index === 0 ? 'opacity-25 cursor-not-allowed' : 'hover:bg-gray-200'}" ${index === 0 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg></button><button title="Descendre" data-id="${item.id}" class="move-down-btn p-1 rounded ${index === state.items.length - 1 ? 'opacity-25 cursor-not-allowed' : 'hover:bg-gray-200'}" ${index === state.items.length - 1 ? 'disabled' : ''}><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg></button><button data-id="${item.id}" class="removeItemBtn bg-red-100 text-red-600 p-2 rounded-full hover:bg-red-200 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></div></div>`;
+                container.appendChild(row);
+            });
+            updateTotalAndPreview();
+        }
+        
+        function updateTotalAndPreview() { const total = state.items.reduce((acc, item) => item.isText ? acc + (item.directPrice || 0) : acc + ((item.quantity || 0) * (item.price || 0)), 0); const totalRmb = state.exchangeRate > 0 ? total / state.exchangeRate : 0; document.getElementById('totalDisplay').innerHTML = `${total.toLocaleString('fr-FR')} Ar<br><span class="text-xl font-semibold text-gray-500">(${totalRmb.toFixed(2)} RMB)</span>`; renderQuotationPreview(); updateProfitCalculator(); }
+        function updateConverterUI() { const inputLabel = document.getElementById('converterInputLabel'); const outputLabel = document.getElementById('converterOutputLabel'); const converterInput = document.getElementById('converterInput'); if (isRmbToAriary) { inputLabel.textContent = 'Montant en RMB (¥)'; outputLabel.textContent = 'Équivalent en Ariary'; converterInput.placeholder = 'Entrez la valeur en RMB'; } else { inputLabel.textContent = 'Montant en Ariary (Ar)'; outputLabel.textContent = 'Équivalent en RMB'; converterInput.placeholder = 'Entrez la valeur en Ariary'; } updateConverter(); }
+        function updateConverter() { const amount = parseFloat(document.getElementById('converterInput').value) || 0; const resultEl = document.getElementById('converterOutputResult'); const exchangeRate = state.exchangeRate; if (isRmbToAriary) { const calculatedAriary = amount * exchangeRate; resultEl.textContent = `${calculatedAriary.toLocaleString('fr-FR')} Ar`; } else { const calculatedRmb = exchangeRate > 0 ? amount / exchangeRate : 0; resultEl.textContent = `${calculatedRmb.toFixed(2).replace('.', ',')} RMB`; } }
+        function updateProfitCalculator() { const customBaseAmountInput = parseFloat(document.getElementById('profit-base-amount').value) || 0; const currency = document.getElementById('profit-base-currency').value; const percentage = parseFloat(document.getElementById('profit-percentage').value) || 0; let baseAmountInAriary = 0; if (customBaseAmountInput > 0) { if (currency === 'RMB') { baseAmountInAriary = customBaseAmountInput * state.exchangeRate; } else { baseAmountInAriary = customBaseAmountInput; } } else { baseAmountInAriary = state.items.reduce((acc, item) => item.isText ? acc + (item.directPrice || 0) : acc + (item.quantity * item.price), 0); } const profitAriary = (baseAmountInAriary * percentage) / 100; const profitRmb = state.exchangeRate > 0 ? profitAriary / state.exchangeRate : 0; document.getElementById('profit-ariary').textContent = `${profitAriary.toLocaleString('fr-FR')} Ar`; document.getElementById('profit-rmb').textContent = `${profitRmb.toFixed(2)} RMB`; }
+
+        // --- NEW Firebase and Utility Functions ---
+        function showToast(message, isError = false) { const toast = document.getElementById('toast'); const toastMessage = document.getElementById('toast-message'); toastMessage.textContent = message; toast.className = `fixed bottom-5 right-5 text-white py-3 px-6 rounded-lg shadow-lg opacity-0 transform translate-y-10 transition-all duration-300 ${isError ? 'bg-red-600' : 'bg-gray-800'}`; toast.style.opacity = '1'; toast.style.transform = 'translateY(0)'; setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(10px)'; }, 3000); }
+        
+        async function saveOrUpdateInvoice() {
+            if (!window.firebaseEnabled) return showToast("Firebase non connecté.", true);
+            const { db, collection, doc, setDoc, serverTimestamp } = window.firebase;
+            const docId = state.firestoreId || state.quotationNumber;
+            const docRef = doc(collection(db, 'invoices'), docId);
+            try {
+                await setDoc(docRef, { ...state, updatedAt: serverTimestamp() }, { merge: true });
+                showToast(`Document "${state.quotationNumber}" enregistré.`);
+                if (!state.firestoreId) state.firestoreId = docId;
+            } catch (error) { showToast("Erreur d'enregistrement.", true); console.error(error); }
+        }
+        
+        function loadInvoiceForEditing(invoiceData) {
+            state = JSON.parse(JSON.stringify(invoiceData));
+            syncFormWithState();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            showToast(`Chargement de: ${state.quotationNumber}`);
         }
 
-        rightPanelsContainer.addEventListener('click', (e) => {
-            const upBtn = e.target.closest('.move-up-btn');
-            const downBtn = e.target.closest('.move-down-btn');
+        async function deleteInvoice(invoiceId, invoiceNumber) {
+            if (!confirm(`Supprimer le document ${invoiceNumber} ?`)) return;
+            const { db, doc, deleteDoc } = window.firebase;
+            try {
+                await deleteDoc(doc(db, "invoices", invoiceId));
+                showToast(`Document ${invoiceNumber} supprimé.`);
+            } catch (error) { showToast("Erreur de suppression.", true); console.error(error); }
+        }
+        
+        function listenForInvoices() {
+            if (!window.firebaseEnabled) return;
+            const { db, collection, onSnapshot, query, orderBy } = window.firebase;
+            const q = query(collection(db, "invoices"), orderBy("updatedAt", "desc"));
             
-            if (!upBtn && !downBtn) return;
-
-            const panel = e.target.closest('.sortable-panel');
-            if (!panel) return;
-
-            if (upBtn) {
-                const prevPanel = panel.previousElementSibling;
-                if (prevPanel) {
-                    rightPanelsContainer.insertBefore(panel, prevPanel);
-                    updateMoveButtons();
+            onSnapshot(q, (querySnapshot) => {
+                const container = document.getElementById('invoice-list-container');
+                container.innerHTML = '';
+                if (querySnapshot.empty) { container.innerHTML = `<p class="text-gray-500">Aucun document enregistré.</p>`; }
+                else {
+                    querySnapshot.forEach((doc) => {
+                        const invoice = { ...doc.data(), firestoreId: doc.id };
+                        const div = document.createElement('div');
+                        div.className = "invoice-list-item flex justify-between items-center p-3 border-b";
+                        div.innerHTML = `<div><p class="font-semibold text-gray-800">${invoice.quotationNumber} - ${invoice.clientName}</p><p class="text-sm text-gray-500">Type: ${invoice.documentTitle} | Modifié le: ${new Date(invoice.updatedAt?.toDate()).toLocaleString('fr-FR')}</p></div><div class="flex space-x-2"><button class="edit-btn bg-yellow-400 text-white p-2 rounded-md hover:bg-yellow-500 text-sm">Modifier</button><button class="delete-btn bg-red-500 text-white p-2 rounded-md hover:bg-red-600 text-sm">Supprimer</button></div>`;
+                        div.querySelector('.edit-btn').addEventListener('click', () => loadInvoiceForEditing(invoice));
+                        div.querySelector('.delete-btn').addEventListener('click', () => deleteInvoice(invoice.firestoreId, invoice.quotationNumber));
+                        container.appendChild(div);
+                    });
                 }
-            }
-
-            if (downBtn) {
-                const nextPanel = panel.nextElementSibling;
-                if (nextPanel) {
-                    rightPanelsContainer.insertBefore(nextPanel, panel);
-                    updateMoveButtons();
-                }
-            }
-        });
+            }, (error) => { console.error(error); container.innerHTML = `<p class="text-red-500">Erreur de connexion à la base de données.</p>`; });
+        }
 
 
         // --- EVENT LISTENERS INITIALIZATION ---
-        document.getElementById('quotationDate').value = state.quotationDate;
-        syncStateWithForm();
-        renderItemsForm();
+        // Your original event listeners for panels, items, converter, etc.
+        const rightPanelsContainer = document.getElementById('right-panels-container');
+        function updateMoveButtons() { const panels = rightPanelsContainer.querySelectorAll('.sortable-panel'); panels.forEach((panel, index) => { const upBtn = panel.querySelector('.move-up-btn'); const downBtn = panel.querySelector('.move-down-btn'); if (upBtn) upBtn.style.display = (index === 0) ? 'none' : 'block'; if (downBtn) downBtn.style.display = (index === panels.length - 1) ? 'none' : 'block'; }); }
+        rightPanelsContainer.addEventListener('click', (e) => { const upBtn = e.target.closest('.move-up-btn'); const downBtn = e.target.closest('.move-down-btn'); if (!upBtn && !downBtn) return; const panel = e.target.closest('.sortable-panel'); if (!panel) return; if (upBtn) { const prevPanel = panel.previousElementSibling; if (prevPanel) { rightPanelsContainer.insertBefore(panel, prevPanel); updateMoveButtons(); } } if (downBtn) { const nextPanel = panel.nextElementSibling; if (nextPanel) { rightPanelsContainer.insertBefore(nextPanel, panel); updateMoveButtons(); } } });
+
         document.querySelector('.lg\\:col-span-2').addEventListener('input', syncStateWithForm);
-        document.getElementById('addItemBtn').addEventListener('click', () => {
-            state.items.push({ id: Date.now(), description: '', specification: '', quantity: 1, price: 0, isText: false, directPrice: 0, align: 'left' });
-            renderItemsForm();
-        });
-        document.getElementById('items-container').addEventListener('input', (e) => {
-            const target = e.target;
-            if (target.dataset.id && target.dataset.field) {
-                const id = parseInt(target.dataset.id);
-                const field = target.dataset.field;
-                const item = state.items.find(i => i.id === id);
-                if (!item) return;
-                let needsReRender = false;
-                const oldValue = item[field];
-                let newValue;
-                if (target.type === 'checkbox') {
-                    newValue = target.checked;
-                    if (oldValue !== newValue) needsReRender = true;
-                } else if (target.type === 'number') {
-                    newValue = parseFloat(target.value) || 0;
-                } else {
-                    newValue = target.value;
-                }
-                item[field] = newValue;
-                if (needsReRender) {
-                    renderItemsForm();
-                } else {
-                    updateTotalAndPreview();
-                }
-            }
-        });
-        document.getElementById('items-container').addEventListener('click', (e) => {
-            const button = e.target.closest('button');
-            if (!button) return;
-            const id = parseInt(button.dataset.id);
-            if (!id) return;
-            if (button.classList.contains('removeItemBtn')) {
-                state.items = state.items.filter(i => i.id !== id);
-                renderItemsForm();
-            } else if (button.classList.contains('move-up-btn')) {
-                const index = state.items.findIndex(i => i.id === id);
-                if (index > 0) {
-                    [state.items[index - 1], state.items[index]] = [state.items[index], state.items[index - 1]];
-                    renderItemsForm();
-                }
-            } else if (button.classList.contains('move-down-btn')) {
-                const index = state.items.findIndex(i => i.id === id);
-                if (index < state.items.length - 1) {
-                    [state.items[index + 1], state.items[index]] = [state.items[index], state.items[index + 1]];
-                    renderItemsForm();
-                }
-            }
-        });
-        document.getElementById('generateImageBtn').addEventListener('click', () => {
-            const elementToCapture = document.getElementById('quotation-preview');
-            const originalWidth = elementToCapture.style.width;
-            elementToCapture.style.width = '1024px';
-            html2canvas(elementToCapture, { scale: 2, useCORS: true, windowWidth: 1024 }).then(canvas => {
-                const imageURL = canvas.toDataURL('image/png');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = imageURL;
-                downloadLink.download = `${state.documentTitle}_${state.quotationNumber}.png`;
-                downloadLink.click();
-                elementToCapture.style.width = originalWidth;
-            });
-        });
-        document.getElementById('swapConverterBtn').addEventListener('click', () => {
-            isRmbToAriary = !isRmbToAriary;
-            document.getElementById('converterInput').value = '';
-            updateConverterUI();
-        });
+        document.getElementById('addItemBtn').addEventListener('click', () => { state.items.push({ id: Date.now(), description: '', specification: '', quantity: 1, price: 0, isText: false, directPrice: 0, align: 'left' }); renderItemsForm(); });
+        document.getElementById('items-container').addEventListener('input', (e) => { const target = e.target; if (target.dataset.id && target.dataset.field) { const id = parseInt(target.dataset.id); const field = target.dataset.field; const item = state.items.find(i => i.id === id); if (!item) return; let needsReRender = false; if (target.type === 'checkbox') { item[field] = target.checked; needsReRender = true; } else if (target.type === 'number') { item[field] = parseFloat(target.value) || 0; } else { item[field] = target.value; } if (needsReRender) { renderItemsForm(); } else { updateTotalAndPreview(); } } });
+        document.getElementById('items-container').addEventListener('click', (e) => { const button = e.target.closest('button'); if (!button) return; const id = parseInt(button.dataset.id); if (!id) return; if (button.classList.contains('removeItemBtn')) { state.items = state.items.filter(i => i.id !== id); renderItemsForm(); } else if (button.classList.contains('move-up-btn')) { const index = state.items.findIndex(i => i.id === id); if (index > 0) { [state.items[index - 1], state.items[index]] = [state.items[index], state.items[index - 1]]; renderItemsForm(); } } else if (button.classList.contains('move-down-btn')) { const index = state.items.findIndex(i => i.id === id); if (index < state.items.length - 1) { [state.items[index + 1], state.items[index]] = [state.items[index], state.items[index + 1]]; renderItemsForm(); } } });
+        document.getElementById('generateImageBtn').addEventListener('click', () => { const elementToCapture = document.getElementById('quotation-preview'); const originalWidth = elementToCapture.style.width; elementToCapture.style.width = '1024px'; html2canvas(elementToCapture, { scale: 2, useCORS: true, windowWidth: 1024 }).then(canvas => { const imageURL = canvas.toDataURL('image/png'); const downloadLink = document.createElement('a'); downloadLink.href = imageURL; downloadLink.download = `${state.documentTitle}_${state.quotationNumber}.png`; downloadLink.click(); elementToCapture.style.width = originalWidth; }); });
+        document.getElementById('swapConverterBtn').addEventListener('click', () => { isRmbToAriary = !isRmbToAriary; document.getElementById('converterInput').value = ''; updateConverterUI(); });
         document.getElementById('converterInput').addEventListener('input', updateConverter);
-        document.getElementById('exchangeRateInput').addEventListener('input', () => {
-            syncStateWithForm();
-            updateConverter();
-        });
+        document.getElementById('exchangeRateInput').addEventListener('input', () => { syncStateWithForm(); updateConverter(); });
         document.getElementById('profit-percentage').addEventListener('input', updateProfitCalculator);
         document.getElementById('profit-base-amount').addEventListener('input', updateProfitCalculator);
         document.getElementById('profit-base-currency').addEventListener('change', updateProfitCalculator);
         
+        // New listeners for save/new buttons
+        document.getElementById('saveInvoiceBtn').addEventListener('click', saveOrUpdateInvoice);
+        document.getElementById('newInvoiceBtn').addEventListener('click', resetState);
+
         // Initial calls
+        resetState(); // Initialize the first empty document
         updateConverterUI();
-        updateMoveButtons(); // Set initial state for move buttons
+        updateMoveButtons();
+        if (window.firebaseEnabled) {
+            document.addEventListener('firebase-auth-ready', listenForInvoices);
+        } else {
+            document.getElementById('loading-invoices').textContent = "Firebase non configuré. Les fonctionnalités en ligne sont désactivées.";
+            document.getElementById('saveInvoiceBtn').disabled = true;
+        }
     });
     </script>
 </body>
 </html>
-
